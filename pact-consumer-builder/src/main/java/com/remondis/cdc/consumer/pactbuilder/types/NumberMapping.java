@@ -7,8 +7,8 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 public class NumberMapping implements PactDslModifier<Number> {
 
   @Override
-  public void apply(PactDslJsonBody pactDslJsonBody, String fieldName, Number fieldValue) {
-    pactDslJsonBody.numberType(fieldName, fieldValue);
+  public PactDslJsonBody apply(PactDslJsonBody pactDslJsonBody, String fieldName, Number fieldValue) {
+    return pactDslJsonBody.numberType(fieldName, fieldValue);
   }
 
 }

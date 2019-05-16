@@ -3,7 +3,7 @@ package com.remondis.cdc.consumer.pactbuilder;
 import static java.util.Objects.requireNonNull;
 
 import java.beans.PropertyDescriptor;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
@@ -18,7 +18,7 @@ public class FieldBuilderImpl<R, T> implements FieldBuilder<R, T> {
   }
 
   @Override
-  public ConsumerBuilder<T> as(Consumer<PactDslJsonBody> pactDslJsonBodyConfigurator) {
+  public ConsumerBuilder<T> as(Function<PactDslJsonBody, PactDslJsonBody> pactDslJsonBodyConfigurator) {
     requireNonNull(pactDslJsonBodyConfigurator, "PactDslJsonBodyConfigurator must not be null!");
     consumerBuilder.addFieldWithCustomConsumer(pd, pactDslJsonBodyConfigurator);
     return consumerBuilder;

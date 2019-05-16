@@ -5,6 +5,6 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 @FunctionalInterface
 public interface PactDslModifier<T> {
 
-  public void apply(PactDslJsonBody pactDslJsonBody, String fieldName, T fieldValue);
+  public PactDslJsonBody apply(PactDslJsonBody pactDslJsonBody, String fieldName, T fieldValue);
 
 }

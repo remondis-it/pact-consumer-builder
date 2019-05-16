@@ -10,7 +10,7 @@ public interface ConsumerBuilder<T> {
 
   ConsumerBuilder<T> referencing(ConsumerBuilder<?> consumer);
 
-  void build(PactDslJsonBody pactDslJsonBody, T sampleData);
+  PactDslJsonBody build(PactDslJsonBody pactDslJsonBody, T sampleData);
 
   Class<T> getType();
 

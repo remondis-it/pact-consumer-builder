@@ -7,8 +7,8 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 public class BooleanMapping implements PactDslModifier<Boolean> {
 
   @Override
-  public void apply(PactDslJsonBody pactDslJsonBody, String fieldName, Boolean fieldValue) {
-    pactDslJsonBody.booleanType(fieldName, fieldValue);
+  public PactDslJsonBody apply(PactDslJsonBody pactDslJsonBody, String fieldName, Boolean fieldValue) {
+    return pactDslJsonBody.booleanType(fieldName, fieldValue);
   }
 
 }

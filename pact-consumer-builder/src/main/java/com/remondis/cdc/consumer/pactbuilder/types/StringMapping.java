@@ -7,8 +7,8 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 public class StringMapping implements PactDslModifier<String> {
 
   @Override
-  public void apply(PactDslJsonBody pactDslJsonBody, String fieldName, String fieldValue) {
-    pactDslJsonBody.stringValue(fieldName, fieldValue);
+  public PactDslJsonBody apply(PactDslJsonBody pactDslJsonBody, String fieldName, String fieldValue) {
+    return pactDslJsonBody.stringValue(fieldName, fieldValue);
   }
 
 }

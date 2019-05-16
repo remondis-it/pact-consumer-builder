@@ -1,12 +1,12 @@
 package com.remondis.cdc.consumer.pactbuilder;
 
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
 public interface FieldBuilder<R, T> {
 
-  ConsumerBuilder<T> as(Consumer<PactDslJsonBody> pactDslJsonBodyConfigurator);
+  ConsumerBuilder<T> as(Function<PactDslJsonBody, PactDslJsonBody> pactDslJsonBodyConfigurator);
 
   ConsumerBuilder<T> as(String jsonFieldName);
 
