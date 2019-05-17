@@ -73,4 +73,53 @@ public class PricingResultResource {
     this.metaData = metaData;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((article == null) ? 0 : article.hashCode());
+    result = prime * result + ((currency == null) ? 0 : currency.hashCode());
+    result = prime * result + ((extraServices == null) ? 0 : extraServices.hashCode());
+    result = prime * result + ((metaData == null) ? 0 : metaData.hashCode());
+    result = prime * result + ((total == null) ? 0 : total.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    PricingResultResource other = (PricingResultResource) obj;
+    if (article == null) {
+      if (other.article != null)
+        return false;
+    } else if (!article.equals(other.article))
+      return false;
+    if (currency == null) {
+      if (other.currency != null)
+        return false;
+    } else if (!currency.equals(other.currency))
+      return false;
+    if (extraServices == null) {
+      if (other.extraServices != null)
+        return false;
+    } else if (!extraServices.equals(other.extraServices))
+      return false;
+    if (metaData == null) {
+      if (other.metaData != null)
+        return false;
+    } else if (!metaData.equals(other.metaData))
+      return false;
+    if (total == null) {
+      if (other.total != null)
+        return false;
+    } else if (!total.equals(other.total))
+      return false;
+    return true;
+  }
+
 }

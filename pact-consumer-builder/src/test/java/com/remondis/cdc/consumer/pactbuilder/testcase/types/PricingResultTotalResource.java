@@ -58,4 +58,44 @@ public class PricingResultTotalResource {
     this.direction = direction;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((direction == null) ? 0 : direction.hashCode());
+    result = prime * result + ((grossAmount == null) ? 0 : grossAmount.hashCode());
+    result = prime * result + ((netAmount == null) ? 0 : netAmount.hashCode());
+    result = prime * result + ((taxAmount == null) ? 0 : taxAmount.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    PricingResultTotalResource other = (PricingResultTotalResource) obj;
+    if (direction != other.direction)
+      return false;
+    if (grossAmount == null) {
+      if (other.grossAmount != null)
+        return false;
+    } else if (!grossAmount.equals(other.grossAmount))
+      return false;
+    if (netAmount == null) {
+      if (other.netAmount != null)
+        return false;
+    } else if (!netAmount.equals(other.netAmount))
+      return false;
+    if (taxAmount == null) {
+      if (other.taxAmount != null)
+        return false;
+    } else if (!taxAmount.equals(other.taxAmount))
+      return false;
+    return true;
+  }
+
 }

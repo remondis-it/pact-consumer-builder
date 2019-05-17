@@ -79,4 +79,56 @@ public class PricingResultUnitPriceResource {
     this.measurementUnit = measurementUnit;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((direction == null) ? 0 : direction.hashCode());
+    result = prime * result + ((grossAmount == null) ? 0 : grossAmount.hashCode());
+    result = prime * result + ((measurementUnit == null) ? 0 : measurementUnit.hashCode());
+    result = prime * result + ((netAmount == null) ? 0 : netAmount.hashCode());
+    result = prime * result + ((priceType == null) ? 0 : priceType.hashCode());
+    result = prime * result + ((taxAmount == null) ? 0 : taxAmount.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    PricingResultUnitPriceResource other = (PricingResultUnitPriceResource) obj;
+    if (direction != other.direction)
+      return false;
+    if (grossAmount == null) {
+      if (other.grossAmount != null)
+        return false;
+    } else if (!grossAmount.equals(other.grossAmount))
+      return false;
+    if (measurementUnit == null) {
+      if (other.measurementUnit != null)
+        return false;
+    } else if (!measurementUnit.equals(other.measurementUnit))
+      return false;
+    if (netAmount == null) {
+      if (other.netAmount != null)
+        return false;
+    } else if (!netAmount.equals(other.netAmount))
+      return false;
+    if (priceType == null) {
+      if (other.priceType != null)
+        return false;
+    } else if (!priceType.equals(other.priceType))
+      return false;
+    if (taxAmount == null) {
+      if (other.taxAmount != null)
+        return false;
+    } else if (!taxAmount.equals(other.taxAmount))
+      return false;
+    return true;
+  }
+
 }

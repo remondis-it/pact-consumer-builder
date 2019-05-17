@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import org.junit.Test;
 
 import com.remondis.cdc.consumer.pactbuilder.ConsumerExpects;
+import com.remondis.cdc.consumer.pactbuilder.JsonHelper;
 import com.remondis.cdc.consumer.pactbuilder.PactDslModifier;
 import com.remondis.cdc.consumer.pactbuilder.testcase.types.PricingResultArticleResource;
 import com.remondis.cdc.consumer.pactbuilder.testcase.types.PricingResultExtraServiceResource;
@@ -49,7 +50,7 @@ public class PactFromBeanTest {
   }
 
   @Test
-  public void test() {
+  public void test() throws Exception {
     PactDslJsonBody libJsonBody = pactFromLibrary();
 
     StringWriter libOutputWriter = new StringWriter();
@@ -65,7 +66,10 @@ public class PactFromBeanTest {
     String originContent = originOutputWriter.getBuffer()
         .toString();
 
-    assertEquals(originContent, libContent);
+    PricingResultResource fromLib = JsonHelper.fromJson(libContent, PricingResultResource.class);
+    PricingResultResource fromOrigin = JsonHelper.fromJson(originContent, PricingResultResource.class);
+
+    assertEquals(fromLib, fromOrigin);
   }
 
   private PactDslJsonBody pactFromOriginal() {

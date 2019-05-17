@@ -23,4 +23,29 @@ public class PricingResultMetaDataResource {
     this.determinationTime = determinationTime;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((determinationTime == null) ? 0 : determinationTime.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    PricingResultMetaDataResource other = (PricingResultMetaDataResource) obj;
+    if (determinationTime == null) {
+      if (other.determinationTime != null)
+        return false;
+    } else if (!determinationTime.equals(other.determinationTime))
+      return false;
+    return true;
+  }
+
 }
