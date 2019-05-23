@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.beans.PropertyDescriptor;
 import java.util.function.Function;
 
+import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
 public class FieldBuilderImpl<R, T> implements FieldBuilder<R, T> {
@@ -18,7 +19,7 @@ public class FieldBuilderImpl<R, T> implements FieldBuilder<R, T> {
   }
 
   @Override
-  public ConsumerBuilder<T> as(Function<PactDslJsonBody, PactDslJsonBody> pactDslJsonBodyConfigurator) {
+  public ConsumerBuilder<T> as(Function<PactDslJsonBody, ? extends DslPart> pactDslJsonBodyConfigurator) {
     requireNonNull(pactDslJsonBodyConfigurator, "PactDslJsonBodyConfigurator must not be null!");
     consumerBuilder.addFieldWithCustomConsumer(pd, pactDslJsonBodyConfigurator);
     return consumerBuilder;

@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 import com.remondis.cdc.consumer.pactbuilder.types.TypeMappings;
 
+import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
 public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
@@ -83,13 +85,22 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
   }
 
   private Set<BiFunction<PactDslJsonBody, Object, PactDslJsonBody>> expandPropertyMap() {
-    return Properties.getProperties(type)
+    // Generate the implicit default mappings.
+    Set<BiFunction<PactDslJsonBody, Object, PactDslJsonBody>> collect = Properties.getProperties(type)
         .stream()
         .filter(((Predicate<PropertyDescriptor>) propertyMap::containsKey).negate())
         .map(pd -> {
           return getModifier(pd, null);
         })
         .collect(Collectors.toSet());
+
+    // Add the custom field mappings.
+    collect.addAll(propertyMap.entrySet()
+        .stream()
+        .map(Entry::getValue)
+        .collect(Collectors.toList()));
+
+    return collect;
   }
 
   private BiFunction<PactDslJsonBody, Object, PactDslJsonBody> getModifier(PropertyDescriptor pd,
@@ -245,11 +256,11 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
   }
 
   void addFieldWithCustomConsumer(PropertyDescriptor pd,
-      Function<PactDslJsonBody, PactDslJsonBody> pactDslJsonBodyConfigurator) {
+      Function<PactDslJsonBody, ? extends DslPart> pactDslJsonBodyConfigurator) {
     Class<?> unwrappedType = ReflectionUtil.getTypeOrListType(pd);
     boolean isReference = consumerReferences.containsKey(unwrappedType);
     BiFunction<PactDslJsonBody, Object, PactDslJsonBody> modifier = (pactDslJsonBody,
-        sampleValue) -> pactDslJsonBodyConfigurator.apply(pactDslJsonBody);
+        sampleValue) -> (PactDslJsonBody) pactDslJsonBodyConfigurator.apply(pactDslJsonBody);
     modifier = wrapInValueExtractorWithCollectionSupport(pd, pd.getName(), modifier, isReference);
     propertyMap.put(pd, modifier);
   }
