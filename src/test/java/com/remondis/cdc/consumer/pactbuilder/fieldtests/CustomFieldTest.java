@@ -9,7 +9,7 @@ import com.remondis.resample.Samples;
 
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
-public class CustomField {
+public class CustomFieldTest {
 
   @Test
   public void shouldCreateCustomStructure() throws Exception {
