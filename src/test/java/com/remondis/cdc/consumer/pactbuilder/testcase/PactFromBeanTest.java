@@ -26,8 +26,7 @@ public class PactFromBeanTest {
 
   private static PactDslModifier<ZonedDateTime> zonedDateTimeMapping() {
     return (pactDslJsonBody, fieldName, fieldValue) -> {
-      DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
-      return pactDslJsonBody.stringType(fieldName, dateTimeFormatter.format(fieldValue));
+      return pactDslJsonBody.stringType(fieldName, DEFAULT_FORMATTER.format(fieldValue));
     };
   }
 

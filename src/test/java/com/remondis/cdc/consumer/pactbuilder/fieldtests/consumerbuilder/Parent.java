@@ -1,16 +1,16 @@
-package com.remondis.cdc.consumer.pactbuilder.customstructure;
+package com.remondis.cdc.consumer.pactbuilder.fieldtests.consumerbuilder;
 
 public class Parent {
 
   private Structure structure;
 
+  public Parent() {
+    super();
+  }
+
   public Parent(Structure structure) {
     super();
     this.structure = structure;
-  }
-
-  public Parent() {
-    super();
   }
 
   public Structure getStructure() {

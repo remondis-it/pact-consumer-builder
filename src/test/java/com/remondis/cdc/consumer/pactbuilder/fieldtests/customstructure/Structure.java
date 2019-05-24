@@ -1,4 +1,4 @@
-package com.remondis.cdc.consumer.pactbuilder.consumerbuilderforfield;
+package com.remondis.cdc.consumer.pactbuilder.fieldtests.customstructure;
 
 public class Structure {
 

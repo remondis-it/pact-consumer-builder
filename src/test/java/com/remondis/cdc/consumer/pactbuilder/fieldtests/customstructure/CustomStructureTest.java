@@ -1,4 +1,4 @@
-package com.remondis.cdc.consumer.pactbuilder.customstructure;
+package com.remondis.cdc.consumer.pactbuilder.fieldtests.customstructure;
 
 import org.junit.Test;
 
@@ -25,7 +25,7 @@ public class CustomStructureTest {
         })
         .build(pactDslJsonBody, expected);
 
-    Result<Parent> result = TestUtil.toObject(pactDslJsonBody, Parent.class);
+    Result<Structure> result = TestUtil.toObject(pactDslJsonBody, Structure.class);
 
     TestUtil.assertObjectEqualsResult(expected, result);
 

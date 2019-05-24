@@ -1,4 +1,4 @@
-package com.remondis.cdc.consumer.pactbuilder.consumerbuilderforfield;
+package com.remondis.cdc.consumer.pactbuilder.fieldtests.consumerbuilder;
 
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
