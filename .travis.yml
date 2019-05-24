@@ -1,0 +1,21 @@
+language: java
+script: mvn install
+
+jdk:
+  - openjdk11
+
+cache:
+  directories:
+  - .autoconf
+  - $HOME/.m2
+
+before_install:
+- chmod +x ./etc/before.sh
+- ./etc/before.sh
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: mvn deploy
+  on:
+    branch: master

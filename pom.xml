@@ -6,11 +6,43 @@
     <groupId>com.remondis.cdc</groupId>
     <artifactId>pact-consumer-builder</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <description>A builder that generates JSON expectations for PACT consumer tests.</description>
+	<url>https://github.com/remondis-it/pact-consumer-builder</url>
+		<scm>
+		<connection>scm:git:https://github.com/remondis-it/pact-consumer-builder.git</connection>
+		<developerConnection>scm:git:git@github.com:remondis-it/pact-consumer-builder.git</developerConnection>
+		<url>https://github.com/remondis-it/pact-consumer-builder</url>
+	</scm>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>schuettec</id>
+			<name>Christopher Schütte</name>
+			<email>christopher.schuette@remondis.de</email>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+2</timezone>
+			<url>N/A</url>
+		</developer>
+	</developers>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+	<distributionManagement>
+		<repository>
+			<id>bintray-schuettec-maven</id>
+			<name>schuettec-maven</name>
+			<url>https://api.bintray.com/maven/schuettec/maven/com.remondis.cdc.consumer.pactbuilder/;publish=1</url>
+		</repository>
+	</distributionManagement>
     <build>
         <pluginManagement>
             <plugins>
@@ -55,10 +87,9 @@
                                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                             </manifest>
                             <manifestEntries>
-                                <Bundle-Vendor>REMONDIS IT Services GmbH
-                                    &amp; Co. KG</Bundle-Vendor>
-                                <Bundle-DocURL>https://github.com/remondis-it/propertypath</Bundle-DocURL>
-                                <Automatic-Module-Name>com.remondis.propertypath</Automatic-Module-Name>
+                                <Bundle-Vendor>REMONDIS IT Services GmbH &amp; Co. KG</Bundle-Vendor>
+                                <Bundle-DocURL>https://github.com/remondis-it/pact-consumer-builder</Bundle-DocURL>
+                                <Automatic-Module-Name>com.remondis.cdc.consumer.pactbuilder</Automatic-Module-Name>
                             </manifestEntries>
                         </archive>
                     </configuration>
