@@ -19,10 +19,30 @@ public interface FieldBuilder<R, T> {
    */
   ConsumerBuilder<T> as(Function<PactDslJsonBody, ? extends DslPart> pactDslJsonBodyConfigurator);
 
+  /**
+   * Specifies a new field name for a default mapping. The mapping will be performed with either default type mappings
+   * or registered {@link ConsumerBuilder}s.
+   * 
+   * @param jsonFieldName The new JSON field name.
+   * @return Returns this builder for method chaining.
+   */
   ConsumerBuilder<T> as(String jsonFieldName);
 
+  /**
+   * Changes the JSON field name to the desired field name and additionally acts like {@link #as(ConsumerBuilder)}.
+   * 
+   * @param anotherConsumer Another {@link ConsumerBuilder} instance for the field type.
+   * @return Returns this builder for method chaining.
+   */
   ConsumerBuilder<T> as(String jsonFieldName, ConsumerBuilder<?> anotherConsumer);
 
+  /**
+   * Registers another {@link ConsumerBuilder} on field level, that defines the JSON structure for the field type. If
+   * another configuration for the type is registered, it will be overridden and the field configuration applies.
+   * 
+   * @param anotherConsumer Another {@link ConsumerBuilder} instance for the field type.
+   * @return Returns this builder for method chaining.
+   */
   ConsumerBuilder<T> as(ConsumerBuilder<?> anotherConsumer);
 
 }

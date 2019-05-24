@@ -3,6 +3,8 @@ package com.remondis.cdc.consumer.pactbuilder;
 import java.io.IOException;
 import java.io.StringWriter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
 public class TestUtil {
@@ -38,14 +40,38 @@ public class TestUtil {
    * @throws IOException Thrown if the conversion fails.
    */
   public static <T> Result<T> toObject(PactDslJsonBody body, Class<T> type) throws IOException {
+    String jsonString = toJson(body);
+
+    T object = JsonHelper.fromJson(jsonString, type);
+    return new Result<T>(object, jsonString);
+  }
+
+  /**
+   * Converts the specified object to a JSON object.
+   * 
+   * @param object The object to convert.
+   * @return Return the JSON as {@link String}.
+   * @throws JsonProcessingException
+   * 
+   */
+  public static String toJson(Object object) throws JsonProcessingException {
+    return JsonHelper.toJson(object);
+  }
+
+  /**
+   * Converts the specified {@link PactDslJsonBody} to a JSON object.
+   * 
+   * @param body The {@link PactDslJsonBody} describing the JSON structure.
+   * @return Return the JSON as {@link String}.
+   * 
+   */
+  public static String toJson(PactDslJsonBody body) {
     StringWriter libOutputWriter = new StringWriter();
     ((org.json.JSONObject) body.getBody()).write(libOutputWriter);
 
     String jsonString = libOutputWriter.getBuffer()
         .toString();
-
-    T object = JsonHelper.fromJson(jsonString, type);
-    return new Result<T>(object, jsonString);
+    return jsonString;
   }
 
   /**

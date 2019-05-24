@@ -1,4 +1,4 @@
-package com.remondis.cdc.consumer.pactbuilder.fieldtests;
+package com.remondis.cdc.consumer.pactbuilder.customstructure;
 
 import org.junit.Test;
 
@@ -9,7 +9,7 @@ import com.remondis.resample.Samples;
 
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
-public class CustomFieldTest {
+public class CustomStructureTest {
 
   @Test
   public void shouldCreateCustomStructure_embedded() throws Exception {

@@ -242,11 +242,9 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
 
   void addFieldCustomNameAndConsumerBuilder(PropertyDescriptor pd, String jsonFieldName,
       ConsumerBuilder<?> anotherConsumer) {
-    Class<?> unwrappedType = ReflectionUtil.getTypeOrListType(pd);
-    boolean isReference = consumerReferences.containsKey(unwrappedType);
     BiFunction<PactDslJsonBody, Object, PactDslJsonBody> modifier = getEmbeddedObjectModifier(jsonFieldName,
         anotherConsumer);
-    modifier = wrapInValueExtractorWithCollectionSupport(pd, jsonFieldName, modifier, isReference);
+    modifier = wrapInValueExtractorWithCollectionSupport(pd, jsonFieldName, modifier, true);
     propertyMap.put(pd, modifier);
   }
 
