@@ -1,4 +1,4 @@
-package com.remondis.cdc.consumer.pactbuilder.fieldtests.consumerbuilder;
+package com.remondis.cdc.consumer.pactbuilder.buildertests.customconsumerbuilder;
 
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -11,7 +11,7 @@ import com.remondis.resample.Samples;
 
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
-public class UseCustomConsumerForFieldTest {
+public class UseGlobalCustomConsumerTest {
   @Test
   public void shouldUseCustomConsumerBuilderAndChangeFieldName() throws Exception {
     PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
@@ -20,29 +20,11 @@ public class UseCustomConsumerForFieldTest {
         .get();
 
     pactDslJsonBody = ConsumerExpects.type(Parent.class)
-        .field(Parent::getStructure)
-        .as("anotherStructureName", getStructureDefinition())
+        .referencing(getStructureDefinition())
         .build(pactDslJsonBody, parent);
 
     String actualJson = TestUtil.toJson(pactDslJsonBody);
 
-    JSONAssert.assertEquals("{\"anotherStructureName\":{\"anotherName\":\"string\"}}", actualJson,
-        JSONCompareMode.NON_EXTENSIBLE);
-  }
-
-  @Test
-  public void shouldUseCustomConsumerBuilder() throws Exception {
-    PactDslJsonBody pactDslJsonBody = new PactDslJsonBody();
-
-    Parent parent = Samples.Default.of(Parent.class)
-        .get();
-
-    pactDslJsonBody = ConsumerExpects.type(Parent.class)
-        .field(Parent::getStructure)
-        .as(getStructureDefinition())
-        .build(pactDslJsonBody, parent);
-
-    String actualJson = TestUtil.toJson(pactDslJsonBody);
     JSONAssert.assertEquals("{\"structure\":{\"anotherName\":\"string\"}}", actualJson, JSONCompareMode.NON_EXTENSIBLE);
   }
 
