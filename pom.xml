@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.remondis.cdc</groupId>
     <artifactId>pact-consumer-builder</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2</version>
     <description>A builder that generates JSON expectations for PACT consumer tests.</description>
 	<url>https://github.com/remondis-it/pact-consumer-builder</url>
 		<scm>
