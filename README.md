@@ -5,9 +5,9 @@ __TODO: Add Build Status badge here__
 # Table of Contents
 1. [Long Story Short](#long-story-short)
 2. [How to use](#how-to-use)
-   2.1. [Custom global data type mappings](#custom-global-data-type-mappings)
-   2.2. [Global Java Bean mappings](#global-java-bean-mappings)
-   2.3. [Declare field mappings](#declare-field-mappings)
+   1. [Custom global data type mappings](#custom-global-data-type-mappings)
+   2. [Global Java Bean mappings](#global-java-bean-mappings)
+   3. [Declare field mappings](#declare-field-mappings)
 3. [How to contribute](#how-to-contribute)
 
 # Long Story Short
