@@ -2,7 +2,15 @@ __TODO: Add Maven Central badge here__
 __TODO: Add JCenter badge here__
 __TODO: Add Build Status badge here__
 
-# Pact Consumer Builder
+# Table of Contents
+1. [Long Story Short](#long-story-short)
+2. [How to use](#how-to-use)
+2.1. [Custom global data type mappings](#custom-global-data-type-mappings)
+2.2. [Global Java Bean mappings](#global-java-bean-mappings)
+2.3. [Declare field mappings](#declare-field-mappings)
+3. [How to contribute](#how-to-contribute)
+
+# Long Story Short
 
 This library tries to reduce the overhead of writing the expectations of JSON structures in PACT consumer test. When writing consumer tests, the JSON structures for each endpoint should be defined. The test uses the defined JSON structures as expectations that are matched against the output of a REST endpoint. When the backend uses Java Beans as a representation for JSON structures, this library may help to reduce the overhead of writing the JSON expectations.
 
@@ -37,10 +45,6 @@ ConsumerExpects.type(PricingResultResource.class)
 The above code shows that all primitive types can be automatically translated to respective calls on `PactDslJsonBody` to declare the JSON structure. The full example uses a field with type `ZonedDateTime`, so a custom converter for this type is added in the example.
 
 You can find the full example [here](src/test/java/com/remondis/cdc/consumer/pactbuilder/testcase/PactFromBeanTest.java)
-
-# Table of Contents
-1. [How to use](#how-to-use)
-xx. [How to contribute](#how-to-contribute)
 
 # How to use
 
