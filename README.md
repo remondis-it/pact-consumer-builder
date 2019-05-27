@@ -1,5 +1,5 @@
 __TODO: Add Maven Central badge here__
-[ ![Download](https://api.bintray.com/packages/schuettec/maven/com.remondis.cdc.consumer.pactbuilder/images/download.svg) ](https://bintray.com/schuettec/maven/com.remondis.cdc.consumer.pactbuilder/_latestVersion)
+[ ![JCenter](https://api.bintray.com/packages/schuettec/maven/com.remondis.cdc.consumer.pactbuilder/images/download.svg) ](https://bintray.com/schuettec/maven/com.remondis.cdc.consumer.pactbuilder/_latestVersion)
 [![Build Status](https://travis-ci.org/remondis-it/pact-consumer-builder.svg?branch=develop)](https://travis-ci.org/remondis-it/pact-consumer-builder)
 
 # Table of Contents
