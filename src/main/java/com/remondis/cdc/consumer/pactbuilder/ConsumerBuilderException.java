@@ -1,6 +1,16 @@
 package com.remondis.cdc.consumer.pactbuilder;
 
+import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
+
+/**
+ * Thrown on any error while converting the sample values or building the {@link PactDslJsonBody}.
+ */
 public class ConsumerBuilderException extends RuntimeException {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   public ConsumerBuilderException() {
   }

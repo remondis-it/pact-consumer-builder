@@ -5,6 +5,13 @@ import java.util.function.Function;
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
+/**
+ * The field builder specified a JSON mapping on a field basis. Globally registered mappings are overridden for the
+ * specified fields.
+ * 
+ * @param <R> The type of the selected field.
+ * @param <T> The type if the Java Bean that is to be defined as JSON structure.
+ */
 public interface FieldBuilder<R, T> {
 
   /**

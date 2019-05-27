@@ -4,6 +4,9 @@ import com.remondis.cdc.consumer.pactbuilder.PactDslModifier;
 
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
+/**
+ * Maps {@link Boolean} to {@link PactDslJsonBody#booleanType(String)}.
+ */
 public class BooleanMapping implements PactDslModifier<Boolean> {
 
   @Override

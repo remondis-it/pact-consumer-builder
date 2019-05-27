@@ -6,6 +6,9 @@ import com.remondis.cdc.consumer.pactbuilder.PactDslModifier;
 
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
+/**
+ * Maps {@link Number} to {@link PactDslJsonBody#decimalType(String, Double)}.
+ */
 public class DecimalMapping implements PactDslModifier<Number> {
 
   @Override

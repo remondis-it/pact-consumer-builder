@@ -2,6 +2,11 @@ package com.remondis.cdc.consumer.pactbuilder;
 
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
+/**
+ * This is the builder used to configure the structure of JSON structures used in Pact consumer tests.
+ * 
+ * @param <T> The type of object that's JSON structure is to be defined.
+ */
 public interface ConsumerBuilder<T> {
 
   /**

@@ -4,6 +4,9 @@ import com.remondis.cdc.consumer.pactbuilder.PactDslModifier;
 
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
+/**
+ * Maps {@link String} to {@link PactDslJsonBody#stringMatcher(String, String)}.
+ */
 public class StringMapping implements PactDslModifier<String> {
 
   @Override
