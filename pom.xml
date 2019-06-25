@@ -314,4 +314,5 @@
             <artifactId>assertj-core</artifactId>
         </dependency>
     </dependencies>
+    <name>Pact Consumer Builder</name>
 </project>
