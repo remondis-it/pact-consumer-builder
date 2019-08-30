@@ -11,7 +11,7 @@ public class StringMapping implements PactDslModifier<String> {
 
   @Override
   public PactDslJsonBody apply(PactDslJsonBody pactDslJsonBody, String fieldName, String fieldValue) {
-    return pactDslJsonBody.stringValue(fieldName, fieldValue);
+    return pactDslJsonBody.stringType(fieldName, fieldValue);
   }
 
 }
