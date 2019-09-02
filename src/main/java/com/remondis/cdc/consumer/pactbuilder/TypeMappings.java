@@ -7,6 +7,7 @@ import java.util.Map;
 import com.remondis.cdc.consumer.pactbuilder.types.BooleanMapping;
 import com.remondis.cdc.consumer.pactbuilder.types.DecimalMapping;
 import com.remondis.cdc.consumer.pactbuilder.types.IntegerMapping;
+import com.remondis.cdc.consumer.pactbuilder.types.LongMapping;
 import com.remondis.cdc.consumer.pactbuilder.types.NumberMapping;
 import com.remondis.cdc.consumer.pactbuilder.types.StringMapping;
 
@@ -22,15 +23,15 @@ class TypeMappings {
     DecimalMapping decimalMapping = new DecimalMapping();
     StringMapping stringMapping = new StringMapping();
     BooleanMapping booleanMapping = new BooleanMapping();
-    @SuppressWarnings("rawtypes")
     IntegerMapping integerMapping = new IntegerMapping();
+    LongMapping longMapping = new LongMapping();
 
     defaultTypeMappings.put(String.class, stringMapping);
 
     defaultTypeMappings.put(byte.class, numberMapping);
     defaultTypeMappings.put(short.class, numberMapping);
     defaultTypeMappings.put(int.class, integerMapping);
-    defaultTypeMappings.put(long.class, integerMapping);
+    defaultTypeMappings.put(long.class, longMapping);
     defaultTypeMappings.put(float.class, numberMapping);
     defaultTypeMappings.put(double.class, decimalMapping);
     defaultTypeMappings.put(boolean.class, booleanMapping);
@@ -38,7 +39,7 @@ class TypeMappings {
     defaultTypeMappings.put(Byte.class, numberMapping);
     defaultTypeMappings.put(Short.class, numberMapping);
     defaultTypeMappings.put(Integer.class, integerMapping);
-    defaultTypeMappings.put(Long.class, integerMapping);
+    defaultTypeMappings.put(Long.class, longMapping);
     defaultTypeMappings.put(Float.class, numberMapping);
     defaultTypeMappings.put(Double.class, decimalMapping);
     defaultTypeMappings.put(Boolean.class, booleanMapping);

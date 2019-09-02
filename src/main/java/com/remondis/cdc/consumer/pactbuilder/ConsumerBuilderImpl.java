@@ -170,9 +170,6 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
       BiFunction<PactDslJsonBody, Object, PactDslJsonBody> modifier) {
     return (pactDslJsonBody, sampleValue) -> {
       pactDslJsonBody = pactDslJsonBody.object(fieldName);
-      if (fieldName.equals("determinationTime")) {
-        System.out.println("Ik habben!");
-      }
       pactDslJsonBody = modifier.apply(pactDslJsonBody, sampleValue);
       pactDslJsonBody = (PactDslJsonBody) pactDslJsonBody.closeObject();
       return pactDslJsonBody;
