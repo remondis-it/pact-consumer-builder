@@ -19,6 +19,7 @@ public class SpringPageSupportTest {
         .field(PageBean::getContent)
         .as(ConsumerExpects.type(Dto.class))
         .build(new PactDslJsonBody(), pageBean);
+
   }
 
 }
