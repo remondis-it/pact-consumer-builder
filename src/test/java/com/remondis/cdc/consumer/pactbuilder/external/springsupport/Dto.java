@@ -1,4 +1,4 @@
-package com.remondis.cdc.consumer.external.springPage;
+package com.remondis.cdc.consumer.pactbuilder.external.springsupport;
 
 public class Dto {
 

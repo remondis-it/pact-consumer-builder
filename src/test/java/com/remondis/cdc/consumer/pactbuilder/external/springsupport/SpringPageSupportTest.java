@@ -1,13 +1,10 @@
-package com.remondis.cdc.consumer.external.springPage;
+package com.remondis.cdc.consumer.pactbuilder.external.springsupport;
 
 import static java.util.Arrays.asList;
 
 import org.junit.Test;
-import org.springframework.data.domain.PageImpl;
 
 import com.remondis.cdc.consumer.pactbuilder.ConsumerExpects;
-import com.remondis.cdc.consumer.pactbuilder.external.springsupport.PageBean;
-import com.remondis.cdc.consumer.pactbuilder.external.springsupport.SortBean;
 
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
@@ -19,7 +16,7 @@ public class SpringPageSupportTest {
     ConsumerExpects.type(PageBean.class)
         .field(PageBean::getSort)
         .as(ConsumerExpects.type(SortBean.class))
-        .field(PageImpl::getContent)
+        .field(PageBean::getContent)
         .as(ConsumerExpects.type(Dto.class))
         .build(new PactDslJsonBody(), pageBean);
   }
