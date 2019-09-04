@@ -8,7 +8,8 @@
    1. [Custom global data type mappings](#custom-global-data-type-mappings)
    2. [Global Java Bean mappings](#global-java-bean-mappings)
    3. [Declare field mappings](#declare-field-mappings)
-3. [How to contribute](#how-to-contribute)
+3. [Pacts from Spring Pageable and Sort](#pacts-from-spring-pageable-and-sort)
+4. [How to contribute](#how-to-contribute)
 
 # Long Story Short
 
@@ -101,6 +102,25 @@ If type `Person` references `Address` and the `Address` structure was already de
  * define a custom JSON field name and reuse another definition for a specific field
 
  Please refer to the JavaDoc or see [here](/src/main/java/com/remondis/cdc/consumer/pactbuilder/FieldBuilder.java)
+
+# Pacts from Spring Pageable and Sort
+
+Pact consumer bodies can be build using the types `PageBean` and `SortBean` provided by this library. The original data types `Page`, `PageImpl` and `Sort` cannot be used due to missing default constructors.
+
+The following example shows how to build a pact consumer body for a `Page` using the JavaBean-versions:
+
+```
+  @Test
+  public void shuldGeneratePactFromPage() {
+    PageBean<Dto> pageBean = new PageBean<>(asList(new Dto("forename1", "name1"), new Dto("forename2", "name2")));
+    ConsumerExpects.type(PageBean.class)
+        .field(PagePageBeanImpl::getSort)
+        .as(ConsumerExpects.type(SortBean.class))
+        .field(PageBean::getContent)
+        .as(ConsumerExpects.type(Dto.class))
+        .build(new PactDslJsonBody(), pageBean);
+  }
+```
 
 
 # How to contribute
