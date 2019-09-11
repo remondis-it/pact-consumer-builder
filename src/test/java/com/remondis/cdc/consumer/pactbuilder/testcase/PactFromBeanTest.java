@@ -33,10 +33,9 @@ public class PactFromBeanTest {
   private PactDslJsonBody pactFromLibrary() {
     PricingResultResource expectedPricingResult = createSample();
 
-    PactDslJsonBody jsonBody = new PactDslJsonBody();
-    ConsumerExpects.type(PricingResultResource.class)
+    PactDslJsonBody jsonBody = ConsumerExpects.type(PricingResultResource.class)
         .useTypeMapping(ZonedDateTime.class, zonedDateTimeMapping())
-        .build(jsonBody, expectedPricingResult);
+        .build(new PactDslJsonBody(), expectedPricingResult);
     return jsonBody;
   }
 
