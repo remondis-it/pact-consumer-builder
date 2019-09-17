@@ -39,7 +39,6 @@ public class TopLevelListTest {
             .get());
 
     String actualJson = TestUtil.toJson(pactDslJsonBody);
-    System.out.println(actualJson);
     JSONAssert.assertEquals("{\"children\":[{\"string\":\"string\"}]}", actualJson, JSONCompareMode.NON_EXTENSIBLE);
     verify(supplier, times(1)).get();
   }
