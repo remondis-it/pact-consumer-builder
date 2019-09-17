@@ -27,6 +27,16 @@ public interface ConsumerBuilder<T> {
   <S> ConsumerBuilder<T> useTypeMapping(Class<S> type, PactDslModifier<S> modifier);
 
   /**
+   * Overrides the default behavior for arrays. Per default, the {@link MinArrayLikeModifier} is used. To change the
+   * global behavior use this method. <b>If you want to change the array mapping per field, use
+   * {@link #field(TypedSelector)} and specify a custom field mapping instead.</b>
+   *
+   * @param customArrayModifier The custom implementation of {@link PactDslArrayModifier}.
+   * @return Returns this instance for method chaining.
+   */
+  ConsumerBuilder<T> useArrayMapping(PactDslArrayModifier customArrayModifier);
+
+  /**
    * Selects a field to specify a JSON mapping. Global type mappings added by
    * {@link #useTypeMapping(Class, PactDslModifier)}, {@link #referencing(ConsumerBuilder)} or default type mappings
    * will be overridden by field configurations.
@@ -54,6 +64,15 @@ public interface ConsumerBuilder<T> {
    *         was configured for.
    */
   PactDslJsonBody build(PactDslJsonBody pactDslJsonBody, T sampleData);
+
+  /**
+   * Creates a new {@link PactDslJsonBody} and generates the JSON structure.
+   *
+   * @param sampleData The sample data instance that provides values for each field of the type.
+   * @return Returns a {@link PactDslJsonBody} representing the JSON structure of the type, this {@link ConsumerBuilder}
+   *         was configured for.
+   */
+  PactDslJsonBody build(T sampleData);
 
   /**
    * @return Returns the type this {@link ConsumerBuilder} is using.
