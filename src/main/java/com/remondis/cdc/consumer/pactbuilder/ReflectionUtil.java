@@ -318,17 +318,22 @@ class ReflectionUtil {
    * @return Returns the inner generic type.
    */
   static Class<?> findGenericTypeFromMethod(Method method, int typeIndex) {
-    ParameterizedType parameterizedType = (ParameterizedType) method.getGenericReturnType();
-    Type type = null;
-    while (parameterizedType != null) {
-      type = parameterizedType.getActualTypeArguments()[typeIndex];
-      if (type instanceof ParameterizedType) {
-        parameterizedType = (ParameterizedType) type;
-      } else {
-        parameterizedType = null;
+    Type genericReturnType = method.getGenericReturnType();
+    if (genericReturnType instanceof ParameterizedType) {
+      ParameterizedType parameterizedType = (ParameterizedType) genericReturnType;
+      Type type = null;
+      while (parameterizedType != null) {
+        type = parameterizedType.getActualTypeArguments()[typeIndex];
+        if (type instanceof ParameterizedType) {
+          parameterizedType = (ParameterizedType) type;
+        } else {
+          parameterizedType = null;
+        }
       }
+      return (Class<?>) type;
+    } else {
+      return (Class<?>) genericReturnType;
     }
-    return (Class<?>) type;
   }
 
 }

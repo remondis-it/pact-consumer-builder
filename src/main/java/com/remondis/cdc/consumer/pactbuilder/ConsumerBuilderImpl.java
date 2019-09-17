@@ -29,6 +29,11 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
   private Map<Class<?>, ConsumerBuilder<?>> consumerReferences;
   private Map<PropertyDescriptor, BiFunction<PactDslJsonBody, Object, PactDslJsonBody>> propertyMap;
 
+  /**
+   * The default array modifier.
+   */
+  private PactDslArrayModifier arrayModifier = new MinArrayLikeModifier();
+
   ConsumerBuilderImpl(Class<T> type) {
     super();
     denyNoJavaBean(type);
@@ -67,6 +72,11 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
     requireNonNull(consumerBuilder, "ConsumerBuilder must not be null!");
     addReference(consumerBuilder.getType(), consumerBuilder);
     return this;
+  }
+
+  @Override
+  public PactDslJsonBody build(T sampleData) {
+    return build(new PactDslJsonBody(), sampleData);
   }
 
   @Override
@@ -202,14 +212,14 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
   private BiFunction<PactDslJsonBody, Object, PactDslJsonBody> getArrayModifier(String fieldName,
       BiFunction<PactDslJsonBody, Object, PactDslJsonBody> modifier) {
     return (pactDslJsonBody, sampleValue) -> {
-      pactDslJsonBody = pactDslJsonBody.minArrayLike(fieldName, 1);
+      pactDslJsonBody = this.arrayModifier.startArray(pactDslJsonBody, fieldName);
       Collection collection = (Collection) sampleValue;
       Iterator it = collection.iterator();
       while (it.hasNext()) {
         Object sampleValueItem = it.next();
         pactDslJsonBody = modifier.apply(pactDslJsonBody, sampleValueItem);
       }
-      return (PactDslJsonBody) pactDslJsonBody.closeArray();
+      return (PactDslJsonBody) this.arrayModifier.closeArray(pactDslJsonBody);
     };
   }
 
@@ -294,6 +304,13 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
     requireNonNull(type, "type must not be null!");
     requireNonNull(modifier, "modifier must not be null!");
     this.basicTypeMappings.put(type, modifier);
+    return this;
+  }
+
+  @Override
+  public ConsumerBuilder<T> useArrayMapping(PactDslArrayModifier customArrayModifier) {
+    requireNonNull(customArrayModifier, "customArrayModifier must not be null!");
+    this.arrayModifier = customArrayModifier;
     return this;
   }
 
