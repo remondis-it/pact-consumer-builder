@@ -13,7 +13,7 @@
 
 # Long Story Short
 
-This library tries to reduce the overhead of writing the expectations of JSON structures in PACT consumer test. Normally you have to specify each field with its type and a sample value separately but if the backend uses Java Beans as a representation for JSON structures, this library performs the necessary calls to the PACT consumer API.
+This library tries to reduce the overhead of writing the expectations of JSON structures in PACT consumer test. Normally you have to specify each field with its type and a sample value separately on `PactDslJsonBody`. If the backend uses Java Beans as a representation for JSON structures, this library performs the necessary calls to the PACT consumer API. This avoids boilerplate code. Changes to your Java Bean model will be automatically reflected by the PACT consumer tests.
 
 The following example shows what is necessary for a PACT consumer test. Assume you want to declare an object holding pricing information, like currency, amount etc. The following PACT consumer test would need the following code:
 
