@@ -13,7 +13,7 @@
 
 # Long Story Short
 
-This library tries to reduce the overhead of writing the expectations of JSON structures in PACT consumer test. When writing consumer tests, the JSON structures for each endpoint should be defined. The test uses the defined JSON structures as expectations that are matched against the output of a REST endpoint. When the backend uses Java Beans as a representation for JSON structures, this library may help to reduce the overhead of writing the JSON expectations.
+This library tries to reduce the overhead of writing the expectations of JSON structures in PACT consumer test. Normally you have to specify each field with its type and a sample value separately but if the backend uses Java Beans as a representation for JSON structures, this library performs the necessary calls to the PACT consumer API.
 
 The following example shows what is necessary for a PACT consumer test. Assume you want to declare an object holding pricing information, like currency, amount etc. The following PACT consumer test would need the following code:
 
@@ -102,6 +102,16 @@ If type `Person` references `Address` and the `Address` structure was already de
  * define a custom JSON field name and reuse another definition for a specific field
 
  Please refer to the JavaDoc or see [here](/src/main/java/com/remondis/cdc/consumer/pactbuilder/FieldBuilder.java)
+
+# Top-level collections
+
+To create a PACT consumer test for an endpoint that returns a collection as the top level element, use the special API entry point:
+
+```
+PactDslJsonBody pactDslJsonBody = ConsumerExpects.collectionOf(<LIST_ITEM_ELEMENT_TYPE>.class)
+   .useArraySupplier(supplier) // Use a custom array structure supplier.
+   .build(<LIST_ITEM_SAMPLE_HERE>);
+```
 
 # Pacts from Spring Pageable and Sort
 
