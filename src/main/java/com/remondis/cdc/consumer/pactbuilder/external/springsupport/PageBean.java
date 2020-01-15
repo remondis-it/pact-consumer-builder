@@ -41,4 +41,9 @@ public class PageBean<T> extends PageImpl<T> {
     super(content);
   }
 
+  @Override
+  public List<T> getContent() {
+    return super.getContent();
+  }
+
 }

@@ -29,6 +29,8 @@ public class UseCustomConsumerForFieldTest {
 
     String actualJson = TestUtil.toJson(pactDslJsonBody);
 
+    System.out.println(actualJson);
+
     JSONAssert.assertEquals("{\"anotherStructureName\":{\"anotherName\":\"string\"}}", actualJson,
         JSONCompareMode.NON_EXTENSIBLE);
   }

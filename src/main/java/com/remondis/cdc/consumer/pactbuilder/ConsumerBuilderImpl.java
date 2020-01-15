@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
+import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 
 public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
 
@@ -111,37 +112,37 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
     return collect;
   }
 
-  private BiFunction<PactDslJsonBody, Object, PactDslJsonBody> getModifier(PropertyDescriptor pd,
+  public BiFunction<PactDslJsonBody, Object, PactDslJsonBody> getCollectionModifier(PropertyDescriptor pd,
       String optionalFieldName) {
     Class<?> unwrappedType = ReflectionUtil.getTypeOrListType(pd);
-
     String fieldName = propertyNameOrOverride(pd, optionalFieldName);
-
-    BiFunction<PactDslJsonBody, Object, PactDslJsonBody> modifier = null;
-
-    // Priorities:
-    // 1. Field settings (filtered by caller of this method)
-    // 2. Consumer references
-    // 3. Basic type mappings.
     boolean isReference = consumerReferences.containsKey(unwrappedType);
     boolean isDefaultDatatype = basicTypeMappings.containsKey(unwrappedType);
     boolean isEnum = (Enum.class.isAssignableFrom(unwrappedType));
 
     if (isEnum) {
-      modifier = getEnumModifier(pd, fieldName);
+      return (pactDslJsonBody, sampleValue) -> {
+        Collection collection = (Collection) sampleValue;
+        return arrayModifier.createRootValueArray(pactDslJsonBody, fieldName,
+            PactDslJsonRootValue.stringType(collection.iterator()
+                .next()
+                .toString()));
+      };
     } else if (isReference) {
       ConsumerBuilder<?> consumerBuilder = consumerReferences.get(unwrappedType);
-      modifier = getEmbeddedObjectModifier(fieldName, consumerBuilder);
+      return getComplexObjectArrayModifier(fieldName, getEmbeddedObjectModifier(fieldName, consumerBuilder));
     } else if (isDefaultDatatype) {
-      modifier = getDefaultDatatypeModifier(unwrappedType, fieldName);
+      PactDslModifier pactDslModifier = basicTypeMappings.get(unwrappedType);
+      if (pactDslModifier instanceof PactDslRootValueModifier) {
+        PactDslRootValueModifier rootValueModifier = (PactDslRootValueModifier) pactDslModifier;
+        return getRootValueArrayModifier(fieldName, rootValueModifier);
+      } else {
+        return getComplexObjectArrayModifier(fieldName, getDefaultDatatypeModifier(unwrappedType, fieldName));
+      }
     } else {
-      // Method readMethod = pd.getReadMethod();
-      // throw new ConsumerBuilderException("Could not find configuration for " + readMethod.getDeclaringClass()
-      // .getName() + "." + readMethod.getName() + "() and type " + propertyType.getName());
       try {
-        isReference = true;
-        modifier = getEmbeddedObjectModifier(fieldName,
-            new ConsumerBuilderImpl<>(unwrappedType, basicTypeMappings, consumerReferences));
+        return getComplexObjectArrayModifier(fieldName, getEmbeddedObjectModifier(fieldName,
+            new ConsumerBuilderImpl<>(unwrappedType, basicTypeMappings, consumerReferences)));
       } catch (NotAJavaBeanException e) {
         String field = pd.getReadMethod()
             .getDeclaringClass()
@@ -154,25 +155,58 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
             + unwrappedType.getSimpleName() + ".");
       }
     }
-
-    BiFunction<PactDslJsonBody, Object, PactDslJsonBody> valueSupplierWrapper = wrapInValueExtractorWithCollectionSupport(
-        pd, fieldName, modifier, isReference);
-
-    return valueSupplierWrapper;
   }
 
-  private BiFunction<PactDslJsonBody, Object, PactDslJsonBody> wrapInValueExtractorWithCollectionSupport(
-      PropertyDescriptor pd, String fieldName, BiFunction<PactDslJsonBody, Object, PactDslJsonBody> modifier,
-      boolean isReference) {
-    // If the field is a collection, wrap the modifier in an array modifier.
-    if (ReflectionUtil.isCollection(pd.getPropertyType())) {
-      modifier = getArrayModifier(fieldName, modifier);
-    } else if (isReference) {
-      modifier = getObjectReferenceModifier(fieldName, modifier);
+  @SuppressWarnings("rawtypes")
+  private BiFunction<PactDslJsonBody, Object, PactDslJsonBody> getModifier(PropertyDescriptor pd,
+      String optionalFieldName) {
+    Class<?> unwrappedType = ReflectionUtil.getTypeOrListType(pd);
+    String fieldName = propertyNameOrOverride(pd, optionalFieldName);
+
+    BiFunction<PactDslJsonBody, Object, PactDslJsonBody> modifier = null;
+
+    // Priorities:
+    // 1. Field settings (filtered by caller of this method)
+    // 2. Consumer references
+    // 3. Basic type mappings.
+    boolean isCollection = ReflectionUtil.isCollection(pd.getPropertyType());
+    boolean isReference = consumerReferences.containsKey(unwrappedType);
+    boolean isDefaultDatatype = basicTypeMappings.containsKey(unwrappedType);
+    boolean isEnum = (Enum.class.isAssignableFrom(unwrappedType));
+
+    if (isCollection) {
+      modifier = getCollectionModifier(pd, fieldName);
+    } else {
+      if (isEnum) {
+        modifier = getEnumModifier(pd, fieldName);
+      } else if (isReference) {
+        ConsumerBuilder<?> consumerBuilder = consumerReferences.get(unwrappedType);
+        modifier = getObjectReferenceModifier(fieldName, getEmbeddedObjectModifier(fieldName, consumerBuilder));
+      } else if (isDefaultDatatype) {
+        modifier = getDefaultDatatypeModifier(unwrappedType, fieldName);
+      } else {
+        // Method readMethod = pd.getReadMethod();
+        // throw new ConsumerBuilderException("Could not find configuration for " + readMethod.getDeclaringClass()
+        // .getName() + "." + readMethod.getName() + "() and type " + propertyType.getName());
+        try {
+          modifier = getObjectReferenceModifier(fieldName, getEmbeddedObjectModifier(fieldName,
+              new ConsumerBuilderImpl<>(unwrappedType, basicTypeMappings, consumerReferences)));
+        } catch (NotAJavaBeanException e) {
+          String field = pd.getReadMethod()
+              .getDeclaringClass()
+              .getSimpleName() + "."
+              + pd.getReadMethod()
+                  .getName()
+              + "()";
+          throw new NotAJavaBeanException("The field " + field + " with type " + unwrappedType.getSimpleName()
+              + " cannot be created with the current configuration.\nPlease add type mapping for "
+              + unwrappedType.getSimpleName() + ".");
+        }
+      }
     }
 
-    // Wrap in value extractor.
     BiFunction<PactDslJsonBody, Object, PactDslJsonBody> valueSupplierWrapper = wrapInValueExtractor(pd, modifier);
+
     return valueSupplierWrapper;
   }
 
@@ -183,6 +217,36 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
       pactDslJsonBody = modifier.apply(pactDslJsonBody, sampleValue);
       pactDslJsonBody = (PactDslJsonBody) pactDslJsonBody.closeObject();
       return pactDslJsonBody;
+    };
+  }
+
+  @SuppressWarnings({
+      "rawtypes", "unchecked"
+  })
+  private BiFunction<PactDslJsonBody, Object, PactDslJsonBody> getRootValueArrayModifier(String fieldName,
+      PactDslRootValueModifier rootValueModifier) {
+    return (pactDslJsonBody, sampleValue) -> {
+      Collection sampleCollection = (Collection) sampleValue;
+      return this.arrayModifier.createRootValueArray(pactDslJsonBody, fieldName,
+          rootValueModifier.asRootValue(sampleCollection.iterator()
+              .next()));
+    };
+  }
+
+  @SuppressWarnings({
+      "rawtypes"
+  })
+  private BiFunction<PactDslJsonBody, Object, PactDslJsonBody> getComplexObjectArrayModifier(String fieldName,
+      BiFunction<PactDslJsonBody, Object, PactDslJsonBody> modifier) {
+    return (pactDslJsonBody, sampleValue) -> {
+      pactDslJsonBody = this.arrayModifier.startArray(pactDslJsonBody, fieldName);
+      Collection collection = (Collection) sampleValue;
+      Iterator it = collection.iterator();
+      while (it.hasNext()) {
+        Object sampleValueItem = it.next();
+        pactDslJsonBody = modifier.apply(pactDslJsonBody, sampleValueItem);
+      }
+      return (PactDslJsonBody) this.arrayModifier.closeArray(pactDslJsonBody);
     };
   }
 
@@ -203,23 +267,6 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
     PactDslModifier pactDslModifier = basicTypeMappings.get(String.class);
     return (pactDslJsonBody, sampleValue) -> {
       return pactDslModifier.apply(pactDslJsonBody, optionalFieldName, sampleValue.toString());
-    };
-  }
-
-  @SuppressWarnings({
-      "rawtypes"
-  })
-  private BiFunction<PactDslJsonBody, Object, PactDslJsonBody> getArrayModifier(String fieldName,
-      BiFunction<PactDslJsonBody, Object, PactDslJsonBody> modifier) {
-    return (pactDslJsonBody, sampleValue) -> {
-      pactDslJsonBody = this.arrayModifier.startArray(pactDslJsonBody, fieldName);
-      Collection collection = (Collection) sampleValue;
-      Iterator it = collection.iterator();
-      while (it.hasNext()) {
-        Object sampleValueItem = it.next();
-        pactDslJsonBody = modifier.apply(pactDslJsonBody, sampleValueItem);
-      }
-      return (PactDslJsonBody) this.arrayModifier.closeArray(pactDslJsonBody);
     };
   }
 
@@ -247,9 +294,14 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
 
   void addFieldCustomNameAndConsumerBuilder(PropertyDescriptor pd, String jsonFieldName,
       ConsumerBuilder<?> anotherConsumer) {
-    BiFunction<PactDslJsonBody, Object, PactDslJsonBody> modifier = getEmbeddedObjectModifier(jsonFieldName,
-        anotherConsumer);
-    modifier = wrapInValueExtractorWithCollectionSupport(pd, jsonFieldName, modifier, true);
+    BiFunction<PactDslJsonBody, Object, PactDslJsonBody> modifier = null;
+    if (ReflectionUtil.isCollection(pd.getPropertyType())) {
+      modifier = getComplexObjectArrayModifier(jsonFieldName,
+          getEmbeddedObjectModifier(jsonFieldName, anotherConsumer));
+    } else {
+      modifier = getObjectReferenceModifier(jsonFieldName, getEmbeddedObjectModifier(jsonFieldName, anotherConsumer));
+    }
+    modifier = wrapInValueExtractor(pd, modifier);
     propertyMap.put(pd, modifier);
   }
 
@@ -261,10 +313,9 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
   void addFieldWithCustomConsumer(PropertyDescriptor pd,
       Function<PactDslJsonBody, ? extends DslPart> pactDslJsonBodyConfigurator) {
     Class<?> unwrappedType = ReflectionUtil.getTypeOrListType(pd);
-    boolean isReference = consumerReferences.containsKey(unwrappedType);
     BiFunction<PactDslJsonBody, Object, PactDslJsonBody> modifier = (pactDslJsonBody,
         sampleValue) -> (PactDslJsonBody) pactDslJsonBodyConfigurator.apply(pactDslJsonBody);
-    modifier = wrapInValueExtractorWithCollectionSupport(pd, pd.getName(), modifier, isReference);
+    modifier = wrapInValueExtractor(pd, modifier);
     propertyMap.put(pd, modifier);
   }
 
