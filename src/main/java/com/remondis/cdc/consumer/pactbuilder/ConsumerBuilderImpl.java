@@ -339,15 +339,22 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
   }
 
   protected Object readOrFail(PropertyDescriptor property, Object source) {
+    Object returnValue = null;
+    Method readMethod = property.getReadMethod();
     try {
-      Method readMethod = property.getReadMethod();
       readMethod.setAccessible(true);
-      return readMethod.invoke(source);
+      returnValue = readMethod.invoke(source);
     } catch (InvocationTargetException e) {
       throw ReflectionException.invocationTarget(property, e);
     } catch (Exception e) {
       throw ReflectionException.invocationFailed(property, e);
     }
+    if (isNull(returnValue)) {
+      throw new ConsumerBuilderException(
+          "A property of the specified sample data object was null. The following get method returned null: "
+              + readMethod.toGenericString());
+    }
+    return returnValue;
   }
 
   @Override
