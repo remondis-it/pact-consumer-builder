@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 /**
  * This is a JavaBean representing a {@link PageImpl}. This class must be used to generate pact consumer from
@@ -30,15 +31,13 @@ public class PageBean<T> extends PageImpl<T> {
   /**
    * See {@link PageImpl}.
    */
-  public PageBean(List<T> content, Pageable pageable, long total) {
-    super(content, pageable, total);
+  public PageBean(List<T> content) {
+    super(content, new PageRequest(0, 2, new Sort("propertyName")), content.size());
   }
 
-  /**
-   * See {@link PageImpl}.
-   */
-  public PageBean(List<T> content) {
-    super(content);
+  @Override
+  public List<T> getContent() {
+    return super.getContent();
   }
 
 }

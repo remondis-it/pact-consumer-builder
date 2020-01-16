@@ -113,9 +113,38 @@ PactDslJsonBody pactDslJsonBody = ConsumerExpects.collectionOf(<LIST_ITEM_ELEMEN
    .build(<LIST_ITEM_SAMPLE_HERE>);
 ```
 
+# Root value objects
+
+The PACT Dsl provides a way to define root values. Root values are values that can be represented by a simple string. When defining arrays using the PACT Dsl, root values must be declared using `au.com.dius.pact.consumer.dsl.PactDslJsonRootValue` instead of using the methods that are used for fields within complex objects.
+
+To support root values, this library provides a second interface `com.remondis.cdc.consumer.pactbuilder.PactDslRootValueModifier<T>`. This interface provides the known methods of `PactDslModifier` but also contains a mandatory method to return the specific `PactDslJsonRootValue`.
+
+If you define data types, that should be rendered as simple strings, always use `PactDslRootValueModifier` when declaring a custom modifier.
+
+Here is an example of a custom modifier definition for an object that should be represented as a simple string:
+
+```
+public class IntegerMapping implements PactDslRootValueModifier<Integer> {
+
+  // Define the PACT Dsl Json Body - relevant when used as a field within a complex object.
+  @Override
+  public PactDslJsonBody apply(PactDslJsonBody pactDslJsonBody, String fieldName, Integer fieldValue) {
+    return pactDslJsonBody.integerType(fieldName, fieldValue);
+  }
+
+  // Define the PACT Dsl Json Root Value - relevant when used as a simple value within an array.
+  @Override
+  public PactDslJsonRootValue asRootValue(Integer fieldValue) {
+    return PactDslJsonRootValue.integerType(fieldValue);
+  }
+
+}
+```
+
+
 # Pacts from Spring Pageable and Sort
 
-Pact consumer bodies can be build using the types `PageBean` and `SortBean` provided by this library. The original data types `Page`, `PageImpl` and `Sort` cannot be used due to missing default constructors.
+Pact consumer bodies can be build using the types `PageBean` provided by this library. The original data types `Page`, `PageImpl` and `Sort` cannot be used due to missing default constructors.
 
 The following example shows how to build a pact consumer body for a `Page` using the JavaBean-versions:
 
@@ -124,13 +153,14 @@ The following example shows how to build a pact consumer body for a `Page` using
   public void shuldGeneratePactFromPage() {
     PageBean<Dto> pageBean = new PageBean<>(asList(new Dto("forename1", "name1"), new Dto("forename2", "name2")));
     ConsumerExpects.type(PageBean.class)
-        .field(PagePageBeanImpl::getSort)
-        .as(ConsumerExpects.type(SortBean.class))
+        .useTypeMapping(Sort.class, SpringSortModifier.sortModifier())
         .field(PageBean::getContent)
         .as(ConsumerExpects.type(Dto.class))
         .build(new PactDslJsonBody(), pageBean);
   }
 ```
+
+The class `com.remondis.cdc.consumer.pactbuilder.external.springsupport.SpringSortModifier` provides a custom JSON body definition for the class `org.springframework.data.domain.Sort`. If you use this custom definition a sort structure will be defined in the resulting pact, but **it uses sample data**. So the sort values of your `PageBean` object will not be reflected in the resulting pact.
 
 
 # How to contribute
