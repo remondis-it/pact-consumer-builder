@@ -28,7 +28,6 @@ public class PageBean<T> extends PageImpl<T> {
     super(Collections.emptyList());
   }
 
-
   /**
    * See {@link PageImpl}.
    */
