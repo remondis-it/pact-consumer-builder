@@ -5,6 +5,7 @@ import java.io.StringWriter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 
 public class TestUtil {
@@ -32,7 +33,7 @@ public class TestUtil {
 
   /**
    * Converts the {@link PactDslJsonBody} to the specified type.
-   * 
+   *
    * @param <T> The target type to convert to.
    * @param body The {@link PactDslJsonBody} describing the JSON structure of the target type.
    * @param type The target type to convert to.
@@ -48,11 +49,11 @@ public class TestUtil {
 
   /**
    * Converts the specified object to a JSON object.
-   * 
+   *
    * @param object The object to convert.
    * @return Return the JSON as {@link String}.
    * @throws JsonProcessingException
-   * 
+   *
    */
   public static String toJson(Object object) throws JsonProcessingException {
     return JsonHelper.toJson(object);
@@ -60,10 +61,26 @@ public class TestUtil {
 
   /**
    * Converts the specified {@link PactDslJsonBody} to a JSON object.
-   * 
+   *
    * @param body The {@link PactDslJsonBody} describing the JSON structure.
    * @return Return the JSON as {@link String}.
-   * 
+   *
+   */
+  public static String toJson(PactDslJsonArray array) {
+    StringWriter libOutputWriter = new StringWriter();
+    ((org.json.JSONArray) array.getBody()).write(libOutputWriter);
+
+    String jsonString = libOutputWriter.getBuffer()
+        .toString();
+    return jsonString;
+  }
+
+  /**
+   * Converts the specified {@link PactDslJsonBody} to a JSON object.
+   *
+   * @param body The {@link PactDslJsonBody} describing the JSON structure.
+   * @return Return the JSON as {@link String}.
+   *
    */
   public static String toJson(PactDslJsonBody body) {
     StringWriter libOutputWriter = new StringWriter();
@@ -78,7 +95,7 @@ public class TestUtil {
    * Compares the specified expected object with the result from converting a {@link PactDslJsonBody} and expects, that
    * the structures are equal. If so, this method returns. If any differences occur or the conversion fails due to
    * structural differences, this method throws an {@link AssertionError} and prints the JSON differences to sys/out.
-   * 
+   *
    * @param <T> The target type
    * @param expectedObject The expected object
    * @param result The actual result from converting a {@link PactDslJsonBody}.

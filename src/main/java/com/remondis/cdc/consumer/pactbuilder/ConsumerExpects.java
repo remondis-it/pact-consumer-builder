@@ -19,7 +19,7 @@ public class ConsumerExpects {
   }
 
   public static <T> TopLevelCollectionDecorator<T> collectionOf(Class<T> type) {
-    return new TopLevelCollectionDecorator<>(type);
+    return new TopLevelCollectionDecorator<>();
   }
 
 }
