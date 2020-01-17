@@ -33,13 +33,14 @@ public class TopLevelListTest {
 
   @Test
   public void shouldCreateTopLevelList() throws Exception {
-    PactDslJsonBody pactDslJsonBody = ConsumerExpects.collectionOf(ListParent.class)
+    PactDslJsonArray pactDslJsonArray = ConsumerExpects.collectionOf(ListParent.class)
         .useArraySupplier(supplier)
+        .arrayContent(ConsumerExpects.type(ListParent.class))
         .build(Samples.Default.of(ListParent.class)
             .get());
 
-    String actualJson = TestUtil.toJson(pactDslJsonBody);
-    JSONAssert.assertEquals("{\"children\":[{\"string\":\"string\"}]}", actualJson, JSONCompareMode.NON_EXTENSIBLE);
+    String actualJson = TestUtil.toJson(pactDslJsonArray);
+    JSONAssert.assertEquals("[{\"children\":[{\"string\":\"string\"}]}]", actualJson, JSONCompareMode.NON_EXTENSIBLE);
     verify(supplier, times(1)).get();
   }
 
