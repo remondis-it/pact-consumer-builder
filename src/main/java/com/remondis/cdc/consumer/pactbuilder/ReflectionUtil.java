@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -317,23 +318,21 @@ class ReflectionUtil {
    * @param method The method to analyze.
    * @return Returns the inner generic type.
    */
-  static Class<?> findGenericTypeFromMethod(Method method, int typeIndex) {
-    Type genericReturnType = method.getGenericReturnType();
-    if (genericReturnType instanceof ParameterizedType) {
-      ParameterizedType parameterizedType = (ParameterizedType) genericReturnType;
-      Type type = null;
-      while (parameterizedType != null) {
-        type = parameterizedType.getActualTypeArguments()[typeIndex];
-        if (type instanceof ParameterizedType) {
-          parameterizedType = (ParameterizedType) type;
-        } else {
-          parameterizedType = null;
-        }
+  static Class<?> findGenericTypeFromMethod(Method method, int genericParameterIndex) {
+    ParameterizedType parameterizedType = (ParameterizedType) method.getGenericReturnType();
+    Type type = null;
+    while (parameterizedType != null) {
+      type = parameterizedType.getActualTypeArguments()[genericParameterIndex];
+      if (type instanceof ParameterizedType) {
+        parameterizedType = (ParameterizedType) type;
+      } else if (type instanceof TypeVariable) {
+        type = Object.class;
+        parameterizedType = null;
+      } else {
+        parameterizedType = null;
       }
-      return (Class<?>) type;
-    } else {
-      return (Class<?>) genericReturnType;
     }
+    return (Class<?>) type;
   }
 
 }
