@@ -35,6 +35,13 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
    */
   private PactDslArrayModifier arrayModifier = new MinArrayLikeModifier();
 
+  /**
+   * Ignore missing values when using {@link #wrapInValueExtractor(PropertyDescriptor, BiFunction)}.
+   * This makes it possible to pass along a class that defines more fields than the actually received DTO.
+   * Only the fields that have a value in the sample will end up in the Pact.
+   */
+  private boolean ignoreMissingValues = false;
+
   ConsumerBuilderImpl(Class<T> type) {
     super();
     denyNoJavaBean(type);
@@ -91,6 +98,12 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
       pactDslJsonBody = modifier.apply(pactDslJsonBody, sampleData);
     }
     return pactDslJsonBody;
+  }
+
+  @Override
+  public ConsumerBuilder<T> ignoreMissingValues() {
+    this.ignoreMissingValues = true;
+    return this;
   }
 
   private Set<BiFunction<PactDslJsonBody, Object, PactDslJsonBody>> expandPropertyMap() {
@@ -253,8 +266,16 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
   private BiFunction<PactDslJsonBody, Object, PactDslJsonBody> wrapInValueExtractor(PropertyDescriptor pd,
       BiFunction<PactDslJsonBody, Object, PactDslJsonBody> modifier) {
     BiFunction<PactDslJsonBody, Object, PactDslJsonBody> valueSupplierWrapper = (pactDslJsonBody, sampleValue) -> {
-      Object value = readOrFail(pd, sampleValue);
-      return modifier.apply(pactDslJsonBody, value);
+      try {
+        Object value = readOrFail(pd, sampleValue);
+        return modifier.apply(pactDslJsonBody, value);
+      } catch (ConsumerBuilderException e) {
+        if (ignoreMissingValues) {
+          return pactDslJsonBody;
+        } else {
+          throw e;
+        }
+      }
     };
     return valueSupplierWrapper;
   }

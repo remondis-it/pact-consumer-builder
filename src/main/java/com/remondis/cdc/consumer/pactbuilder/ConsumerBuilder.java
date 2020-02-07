@@ -79,4 +79,10 @@ public interface ConsumerBuilder<T> {
    */
   Class<T> getType();
 
+  /**
+   * When building the Pact, don't fail on a null value but just ignore the field instead.
+   *
+   * @return Returns this instance for method chaining.
+   */
+  ConsumerBuilder<T> ignoreMissingValues();
 }
