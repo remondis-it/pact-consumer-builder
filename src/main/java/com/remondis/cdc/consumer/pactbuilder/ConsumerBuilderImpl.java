@@ -52,12 +52,13 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
   }
 
   private ConsumerBuilderImpl(Class<T> type, Map<Class<?>, PactDslModifier<?>> basicTypeMappings,
-      Map<Class<?>, ConsumerBuilder<?>> consumerReferences) throws NotAJavaBeanException {
+      Map<Class<?>, ConsumerBuilder<?>> consumerReferences, boolean ignoreMissingValues) throws NotAJavaBeanException {
     super();
     this.type = type;
     denyNoJavaBean(type);
     this.basicTypeMappings = basicTypeMappings;
     this.consumerReferences = consumerReferences;
+    this.ignoreMissingValues = ignoreMissingValues;
     this.propertyMap = new Hashtable<>();
   }
 
@@ -155,7 +156,7 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
     } else {
       try {
         return getComplexObjectArrayModifier(fieldName, getEmbeddedObjectModifier(fieldName,
-            new ConsumerBuilderImpl<>(unwrappedType, basicTypeMappings, consumerReferences)));
+            new ConsumerBuilderImpl<>(unwrappedType, basicTypeMappings, consumerReferences, ignoreMissingValues)));
       } catch (NotAJavaBeanException e) {
         String field = pd.getReadMethod()
             .getDeclaringClass()
@@ -203,7 +204,7 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
         // .getName() + "." + readMethod.getName() + "() and type " + propertyType.getName());
         try {
           modifier = getObjectReferenceModifier(fieldName, getEmbeddedObjectModifier(fieldName,
-              new ConsumerBuilderImpl<>(unwrappedType, basicTypeMappings, consumerReferences)));
+              new ConsumerBuilderImpl<>(unwrappedType, basicTypeMappings, consumerReferences, ignoreMissingValues)));
         } catch (NotAJavaBeanException e) {
           String field = pd.getReadMethod()
               .getDeclaringClass()

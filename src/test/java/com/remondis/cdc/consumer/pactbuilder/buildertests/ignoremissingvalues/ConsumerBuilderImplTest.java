@@ -5,6 +5,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslResponse;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.RequestResponsePact;
+import au.com.dius.pact.model.matchingrules.MatchingRuleGroup;
 import au.com.dius.pact.model.matchingrules.MatchingRules;
 import com.remondis.cdc.consumer.pactbuilder.ConsumerBuilderException;
 import com.remondis.cdc.consumer.pactbuilder.ConsumerExpects;
@@ -13,6 +14,7 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
+import java.util.Map;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,7 +29,7 @@ public class ConsumerBuilderImplTest {
   public void shouldFailOnMissingValues() {
     // Given a Structure instance with one field value not being filled in
     Structure instance = new Structure();
-    instance.setField1(new SomeField("value1"));
+    instance.setField1(new PropertyA("value1"));
     instance.setField2(null);
     // When we build a RequestResponsePact with the given instance
     // Then the field with the missing value won't be included in the Pact and we should get an exception...
@@ -47,17 +49,112 @@ public class ConsumerBuilderImplTest {
   public void shouldIgnoreMissingValuesInsteadOfFailing() {
     // Given a Structure instance with one field value not being filled in
     Structure instance = new Structure();
-    instance.setField1(new SomeField("value1"));
+    instance.setField1(new PropertyA("value1"));
     instance.setField2(null);
     // When we build a RequestResponsePact with the given instance
     PactDslJsonBody pactDslJsonBody = ConsumerExpects.type(Structure.class)
         .ignoreMissingValues()
         .build(instance);
     // Then the field with the missing value shouldn't be included in the Pact
+    expectPactBuildResult(pactDslJsonBody, "{\"field1\":{\"fieldA1\":\"value1\"}}", "$.field1.fieldA1");
+  }
+
+  /**
+   * Make sure nested objects with one or more missing values still get included.
+   */
+  @Test
+  public void shouldIgnoreMissingValuesInsteadOfFailingNestedNull() {
+    // Given a Structure instance with one field value not being filled in
+    Structure instance = new Structure();
+    instance.setField1(new PropertyA("value1"));
+    instance.setField2(null);
+    instance.setField3(new PropertyA("value3"));
+    // When we build a RequestResponsePact with the given instance
+    PactDslJsonBody pactDslJsonBody = ConsumerExpects.type(Structure.class)
+        .ignoreMissingValues()
+        .build(instance);
+    // Then the field with the missing value shouldn't be included in the Pact
+    expectPactBuildResult(pactDslJsonBody, "{\"field1\":{\"fieldA1\":\"value1\"},\"field3\":{\"fieldA1\":\"value3\"}}",
+        "$.field1.fieldA1", "$.field3.fieldA1");
+  }
+
+  /**
+   * Make sure nested objects with one or more missing values still get included.
+   * In this case, we include an "empty instance", which will not result in a matching rule,
+   * but will end up in the sample JSON.
+   */
+  @Test
+  public void shouldIgnoreMissingValuesInsteadOfFailingNested() {
+    // Given a Structure instance with one field value not being filled in
+    Structure instance = new Structure();
+    instance.setField1(new PropertyA("value1"));
+    instance.setField2(new PropertyA(null));
+    instance.setField3(new PropertyA("value3"));
+    // When we build a RequestResponsePact with the given instance
+    PactDslJsonBody pactDslJsonBody = ConsumerExpects.type(Structure.class)
+        .ignoreMissingValues()
+        .build(instance);
+    // Then the field with the missing value shouldn't be included in the Pact
+    expectPactBuildResult(pactDslJsonBody,
+        "{\"field1\":{\"fieldA1\":\"value1\"},\"field2\":{},\"field3\":{\"fieldA1\":\"value3\"}}", "$.field1.fieldA1",
+        "$.field3.fieldA1");
+  }
+
+  /**
+   * Make sure nested objects with one or more missing values still get included.
+   * Testing one level deeper.
+   */
+  @Test
+  public void shouldIgnoreMissingValuesInsteadOfFailingAnotherNested() {
+    // Given a Structure instance with one field value not being filled in
+    Structure instance = new Structure();
+    PropertyB anotherField = new PropertyB();
+    anotherField.setFieldB1(new PropertyC("value1"));
+    instance.setField4(anotherField);
+    // When we build a RequestResponsePact with the given instance
+    PactDslJsonBody pactDslJsonBody = ConsumerExpects.type(Structure.class)
+        .ignoreMissingValues()
+        .build(instance);
+    // Then the field with the missing value shouldn't be included in the Pact
+    expectPactBuildResult(pactDslJsonBody, "{\"field4\":{\"fieldB1\":{\"fieldC1\":\"value1\"}}}",
+        "$.field4.fieldB1.fieldC1");
+  }
+
+  /**
+   * Make sure nested objects with one or more missing values still get included.
+   * Testing one level deeper.
+   */
+  @Test
+  public void shouldIgnoreMissingValuesInsteadOfFailingAnotherNestedFull() {
+    // Given a Structure instance with one field value not being filled in
+    Structure instance = new Structure();
+    PropertyB anotherField = new PropertyB();
+    anotherField.setFieldB1(new PropertyC("value1"));
+    anotherField.setFieldB2(new PropertyC("value2"));
+    instance.setField4(anotherField);
+    // When we build a RequestResponsePact with the given instance
+    PactDslJsonBody pactDslJsonBody = ConsumerExpects.type(Structure.class)
+        .ignoreMissingValues()
+        .build(instance);
+    // Then the field with the missing value shouldn't be included in the Pact
+    expectPactBuildResult(pactDslJsonBody,
+        "{\"field4\":{\"fieldB1\":{\"fieldC1\":\"value1\"},\"fieldB2\":{\"fieldC1\":\"value2\"}}}",
+        "$.field4.fieldB1.fieldC1", "$.field4.fieldB2.fieldC1");
+  }
+
+  /**
+   * Build Pact and perform some assertions.
+   *
+   * @param pactDslJsonBody The {@link PactDslJsonBody} to assert against
+   * @param expectedJson The expected resulting JSON string
+   * @param expectedBodyMatcherKeys The expected keys for the body category matching rules
+   */
+  private void expectPactBuildResult(PactDslJsonBody pactDslJsonBody, String expectedJson,
+      String... expectedBodyMatcherKeys) {
     PactDslWithProvider builder = new PactDslWithProvider(new ConsumerPactBuilder("consumer"), "provider");
     String actualJson = TestUtil.toJson(pactDslJsonBody);
-    JSONAssert.assertEquals("{\"field1\":{\"field\":\"value1\"}}", actualJson, JSONCompareMode.NON_EXTENSIBLE);
-    // And we shouldn't get an exception...
+    JSONAssert.assertEquals(expectedJson, actualJson, JSONCompareMode.NON_EXTENSIBLE);
+    // We shouldn't get an exception...
     PactDslResponse dslResponse = builder.given("GET request")
         .uponReceiving("GET request")
         .path("/structure/1")
@@ -66,14 +163,15 @@ public class ConsumerBuilderImplTest {
         .status(200)
         .body(pactDslJsonBody);
     RequestResponsePact pact = dslResponse.toPact();
-    // Only field 1 should be included in the matching rules for body
+    // Check the resulting matching rules
     MatchingRules responseMatchingRules = Objects.requireNonNull(pact.getInteractions()
         .get(0)
         .getResponse()
         .getMatchingRules());
-    assertThat(responseMatchingRules.rulesForCategory("body")
-        .getMatchingRules()
-        .size()).isEqualTo(1);
+    Map<String, MatchingRuleGroup> bodyMatchingRules = responseMatchingRules.rulesForCategory("body")
+        .getMatchingRules();
+    assertThat(bodyMatchingRules.size()).isEqualTo(expectedBodyMatcherKeys.length);
+    assertThat(bodyMatchingRules.keySet()).containsExactlyInAnyOrder(expectedBodyMatcherKeys);
   }
 
 }
