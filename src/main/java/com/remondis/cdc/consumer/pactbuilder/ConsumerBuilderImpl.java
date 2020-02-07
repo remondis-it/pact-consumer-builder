@@ -269,7 +269,7 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
       try {
         Object value = readOrFail(pd, sampleValue);
         return modifier.apply(pactDslJsonBody, value);
-      } catch (ConsumerBuilderException e) {
+      } catch (NoSampleValueException e) {
         if (ignoreMissingValues) {
           return pactDslJsonBody;
         } else {
@@ -371,7 +371,7 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
       throw ReflectionException.invocationFailed(property, e);
     }
     if (isNull(returnValue)) {
-      throw new ConsumerBuilderException(
+      throw new NoSampleValueException(
           "A property of the specified sample data object was null. The following get method returned null: "
               + readMethod.toGenericString());
     }
