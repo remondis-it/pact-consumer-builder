@@ -7,10 +7,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
  */
 public class ConsumerBuilderException extends RuntimeException {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 2787755594910807663L;
 
   public ConsumerBuilderException() {
   }
