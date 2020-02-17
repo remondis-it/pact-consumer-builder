@@ -127,8 +127,8 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
   }
 
   @SuppressWarnings("rawtypes")
-  BiFunction<PactDslJsonBody, Object, PactDslJsonBody> getCollectionModifier(String field, Class propertyType,
-      Class unwrappedType, String fieldName) {
+  BiFunction<PactDslJsonBody, Object, PactDslJsonBody> getCollectionModifier(String field, Class unwrappedType,
+      String fieldName) {
     boolean isPossibleGenericType = unwrappedType == Object.class;
     boolean isReference = consumerReferences.containsKey(unwrappedType);
     boolean isDefaultDatatype = basicTypeMappings.containsKey(unwrappedType);
@@ -140,7 +140,7 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
         Object itemValue = collection.iterator()
             .next();
         Class itemType = itemValue.getClass();
-        return _getMethod(field, fieldName, itemType, itemType).apply(pactDslJsonBody, itemValue);
+        return getCollectionModifier(field, itemType, fieldName).apply(pactDslJsonBody, collection);
       };
     } else if (isEnum) {
       return (pactDslJsonBody, sampleValue) -> {
@@ -207,7 +207,7 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
     boolean isEnum = (Enum.class.isAssignableFrom(unwrappedType));
 
     if (isCollection) {
-      modifier = getCollectionModifier(field, propertyType, unwrappedType, fieldName);
+      modifier = getCollectionModifier(field, unwrappedType, fieldName);
     } else {
       if (isEnum) {
         modifier = getEnumModifier(fieldName);
