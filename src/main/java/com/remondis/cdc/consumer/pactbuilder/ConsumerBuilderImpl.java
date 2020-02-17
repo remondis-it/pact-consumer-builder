@@ -140,7 +140,7 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
         Object itemValue = collection.iterator()
             .next();
         Class itemType = itemValue.getClass();
-        return _getMethod(field, fieldName, itemType, itemType).apply(pactDslJsonBody, itemValue);
+        return getCollectionModifier(field, itemType, itemType, fieldName).apply(pactDslJsonBody, itemValue);
       };
     } else if (isEnum) {
       return (pactDslJsonBody, sampleValue) -> {

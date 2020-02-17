@@ -22,7 +22,7 @@ public class GenericTest {
         .build(genericDummy);
     String actualJson = TestUtil.toJson(pactDslJsonBody);
     System.out.println(actualJson);
-    JSONAssert.assertEquals("{\"list\":\"A\"}", actualJson, JSONCompareMode.NON_EXTENSIBLE);
+    JSONAssert.assertEquals("{\"list\":[\"A\"]}", actualJson, JSONCompareMode.NON_EXTENSIBLE);
   }
 
   @Test
