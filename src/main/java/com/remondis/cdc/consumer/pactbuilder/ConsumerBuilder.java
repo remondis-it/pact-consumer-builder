@@ -85,4 +85,11 @@ public interface ConsumerBuilder<T> {
    * @return Returns this instance for method chaining.
    */
   ConsumerBuilder<T> ignoreMissingValues();
+
+  /**
+   * Enforce a correct property naming convention. This will make sure properties don't start with uppercase characters.
+   *
+   * @return Returns this instance for method chaining.
+   */
+  ConsumerBuilder<T> enforcePropertyNamingConvention();
 }

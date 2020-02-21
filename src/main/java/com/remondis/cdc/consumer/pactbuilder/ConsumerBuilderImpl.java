@@ -1,6 +1,7 @@
 package com.remondis.cdc.consumer.pactbuilder;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 
 import java.beans.PropertyDescriptor;
@@ -20,6 +21,8 @@ import java.util.stream.Collectors;
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
+import com.fasterxml.jackson.databind.util.BeanUtil;
 
 public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
 
@@ -42,6 +45,12 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
    */
   private boolean ignoreMissingValues = false;
 
+  /**
+   * Enforce a correct property naming convention.
+   * This way property names that start with uppercase characters, are converted to use correct camel casing.
+   */
+  private boolean enforcePropertyNamingConvention = false;
+
   ConsumerBuilderImpl(Class<T> type) {
     super();
     denyNoJavaBean(type);
@@ -52,13 +61,15 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
   }
 
   private ConsumerBuilderImpl(Class<T> type, Map<Class<?>, PactDslModifier<?>> basicTypeMappings,
-      Map<Class<?>, ConsumerBuilder<?>> consumerReferences, boolean ignoreMissingValues) throws NotAJavaBeanException {
+      Map<Class<?>, ConsumerBuilder<?>> consumerReferences, boolean ignoreMissingValues,
+      boolean enforcePropertyNamingConvention) throws NotAJavaBeanException {
     super();
     this.type = type;
     denyNoJavaBean(type);
     this.basicTypeMappings = basicTypeMappings;
     this.consumerReferences = consumerReferences;
     this.ignoreMissingValues = ignoreMissingValues;
+    this.enforcePropertyNamingConvention = enforcePropertyNamingConvention;
     this.propertyMap = new Hashtable<>();
   }
 
@@ -104,6 +115,12 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
   @Override
   public ConsumerBuilder<T> ignoreMissingValues() {
     this.ignoreMissingValues = true;
+    return this;
+  }
+
+  @Override
+  public ConsumerBuilder<T> enforcePropertyNamingConvention() {
+    this.enforcePropertyNamingConvention = true;
     return this;
   }
 
@@ -162,8 +179,9 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
         return getComplexObjectArrayModifier(fieldName, getDefaultDatatypeModifier(unwrappedType, fieldName));
       }
     } else {
-      return getComplexObjectArrayModifier(fieldName, getEmbeddedObjectModifier(fieldName,
-          new ConsumerBuilderImpl<>(unwrappedType, basicTypeMappings, consumerReferences, ignoreMissingValues)));
+      return getComplexObjectArrayModifier(fieldName,
+          getEmbeddedObjectModifier(fieldName, new ConsumerBuilderImpl<>(unwrappedType, basicTypeMappings,
+              consumerReferences, ignoreMissingValues, enforcePropertyNamingConvention)));
     }
   }
 
@@ -224,8 +242,9 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
               return _getMethod(field, fieldName, itemType, itemType).apply(pactDslJsonBody, sampleValue);
             };
           } else {
-            modifier = getObjectReferenceModifier(fieldName, getEmbeddedObjectModifier(fieldName,
-                new ConsumerBuilderImpl<>(unwrappedType, basicTypeMappings, consumerReferences, ignoreMissingValues)));
+            modifier = getObjectReferenceModifier(fieldName,
+                getEmbeddedObjectModifier(fieldName, new ConsumerBuilderImpl<>(unwrappedType, basicTypeMappings,
+                    consumerReferences, ignoreMissingValues, enforcePropertyNamingConvention)));
           }
         } catch (NotAJavaBeanException e) {
           throw new NotAJavaBeanException("The field " + field + " with type " + unwrappedType.getSimpleName()
@@ -359,11 +378,16 @@ public class ConsumerBuilderImpl<T> implements ConsumerBuilder<T> {
   }
 
   private String propertyNameOrOverride(PropertyDescriptor pd, String optionalFieldName) {
-    if (isNull(optionalFieldName)) {
-      return pd.getName();
-    } else {
+    // If an optionalFieldName has been passed along, use that one
+    if (nonNull(optionalFieldName)) {
       return optionalFieldName;
     }
+    // If enforcePropertyNamingConvention is set, then enforce a correct naming convention (don't start with uppercase)
+    if (enforcePropertyNamingConvention && pd.getReadMethod() != null) {
+      return BeanUtil.okNameForGetter(new AnnotatedMethod(null, pd.getReadMethod(), null, null), false);
+    }
+    // By default, just return the name of the PropertyDescriptor
+    return pd.getName();
   }
 
   @Override
