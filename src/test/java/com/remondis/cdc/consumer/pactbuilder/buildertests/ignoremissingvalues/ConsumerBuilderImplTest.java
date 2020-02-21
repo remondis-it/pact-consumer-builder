@@ -7,15 +7,21 @@ import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.RequestResponsePact;
 import au.com.dius.pact.model.matchingrules.MatchingRuleGroup;
 import au.com.dius.pact.model.matchingrules.MatchingRules;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.remondis.cdc.consumer.pactbuilder.ConsumerBuilder;
 import com.remondis.cdc.consumer.pactbuilder.ConsumerBuilderException;
 import com.remondis.cdc.consumer.pactbuilder.ConsumerExpects;
 import com.remondis.cdc.consumer.pactbuilder.TestUtil;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
+import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -140,6 +146,48 @@ public class ConsumerBuilderImplTest {
     expectPactBuildResult(pactDslJsonBody,
         "{\"field4\":{\"fieldB1\":{\"fieldC1\":\"value1\"},\"fieldB2\":{\"fieldC1\":\"value2\"}}}",
         "$.field4.fieldB1.fieldC1", "$.field4.fieldB2.fieldC1");
+  }
+
+  /**
+   * The {@link ObjectMapper} will change fieldnames that start with uppercase characters to start with lowercase.
+   * The {@link com.remondis.cdc.consumer.pactbuilder.ConsumerBuilderImpl} is not doing this (by default).
+   */
+  @Test
+  public void shouldNotLowercaseFirstFieldnameLettersByDefault() throws IOException {
+    CaseFieldObject object = new CaseFieldObject("a", "b", "c");
+    String defaultObjectMapperSerialized = new ObjectMapper().writeValueAsString(object);
+    PactDslJsonBody pactDslJsonBody = ConsumerExpects.type(CaseFieldObject.class)
+        .build(object);
+    String actualJson = TestUtil.toJson(pactDslJsonBody);
+    Set<String> actualJsonProperties = getJsonPropertyNames(actualJson);
+    Set<String> defaultObjectMapperProperties = getJsonPropertyNames(defaultObjectMapperSerialized);
+    assertThat(actualJsonProperties).doesNotContainSequence(defaultObjectMapperProperties);
+  }
+
+  /**
+   * The {@link ObjectMapper} will change fieldnames that start with uppercase characters to start with lowercase.
+   * The {@link com.remondis.cdc.consumer.pactbuilder.ConsumerBuilderImpl} is not doing this (by default),
+   * which leads to a Pact that would contain fields such as "ABCFieldOne" instead of "abcfieldOne".
+   * In order to correctly match the provider (using ObjectMapper) and the consumer (using ConsumerBuilderImpl)
+   * properties, {@link ConsumerBuilder#enforcePropertyNamingConvention()} has been provided.
+   */
+  @Test
+  public void shouldLowercaseFirstFieldnameLettersWhenRequired() throws IOException {
+    CaseFieldObject object = new CaseFieldObject("a", "b", "c");
+    String objectMapperSerialized = new ObjectMapper().writeValueAsString(object);
+    PactDslJsonBody pactDslJsonBody = ConsumerExpects.type(CaseFieldObject.class)
+        .enforcePropertyNamingConvention()
+        .build(object);
+    String actualJson = TestUtil.toJson(pactDslJsonBody);
+    Set<String> actualJsonProperties = getJsonPropertyNames(actualJson);
+    Set<String> defaultObjectMapperProperties = getJsonPropertyNames(objectMapperSerialized);
+    assertThat(actualJsonProperties).containsExactlyInAnyOrder(defaultObjectMapperProperties.toArray(new String[0]));
+  }
+
+  @NotNull
+  private Set<String> getJsonPropertyNames(String actualJson) throws IOException {
+    return new ObjectMapper().readValue(actualJson, LinkedHashMap.class)
+        .keySet();
   }
 
   /**
