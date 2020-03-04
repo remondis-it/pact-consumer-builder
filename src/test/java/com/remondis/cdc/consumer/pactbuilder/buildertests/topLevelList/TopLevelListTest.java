@@ -44,4 +44,15 @@ public class TopLevelListTest {
     verify(supplier, times(1)).get();
   }
 
+  @Test
+  public void shouldCreateTopLevelList_defaultArraySupplier() throws Exception {
+    PactDslJsonArray pactDslJsonArray = ConsumerExpects.collectionOf(ListParent.class)
+        .arrayContent(ConsumerExpects.type(ListParent.class))
+        .build(Samples.Default.of(ListParent.class)
+            .get());
+
+    String actualJson = TestUtil.toJson(pactDslJsonArray);
+    JSONAssert.assertEquals("[{\"children\":[{\"string\":\"string\"}]}]", actualJson, JSONCompareMode.NON_EXTENSIBLE);
+  }
+
 }

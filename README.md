@@ -8,6 +8,8 @@
    1. [Custom global data type mappings](#custom-global-data-type-mappings)
    2. [Global Java Bean mappings](#global-java-bean-mappings)
    3. [Declare field mappings](#declare-field-mappings)
+   4. [Top-level collections](#top-level-collections)
+   5. [Root value objects](#root-value-objects)
 3. [Pacts from Spring Pageable and Sort](#pacts-from-spring-pageable-and-sort)
 4. [How to contribute](#how-to-contribute)
 
@@ -103,17 +105,19 @@ If type `Person` references `Address` and the `Address` structure was already de
 
  Please refer to the JavaDoc or see [here](/src/main/java/com/remondis/cdc/consumer/pactbuilder/FieldBuilder.java)
 
-# Top-level collections
+## Top-level collections
 
 To create a PACT consumer test for an endpoint that returns a collection as the top level element, use the special API entry point:
 
 ```
-PactDslJsonBody pactDslJsonBody = ConsumerExpects.collectionOf(<LIST_ITEM_ELEMENT_TYPE>.class)
+PactDslJsonArray pactDslJsonArray = ConsumerExpects.collectionOf(<LIST_ITEM_ELEMENT_TYPE>.class)
    .useArraySupplier(supplier) // Use a custom array structure supplier.
    .build(<LIST_ITEM_SAMPLE_HERE>);
 ```
 
-# Root value objects
+For a complete example please refer to [this example](src/test/java/com/remondis/cdc/consumer/pactbuilder/buildertests/topLevelList/TopLevelListTest.java).
+
+## Root value objects
 
 The PACT Dsl provides a way to define root values. Root values are values that can be represented by a simple string. When defining arrays using the PACT Dsl, root values must be declared using `au.com.dius.pact.consumer.dsl.PactDslJsonRootValue` instead of using the methods that are used for fields within complex objects.
 
