@@ -4,9 +4,9 @@ import au.com.dius.pact.consumer.ConsumerPactBuilder;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslResponse;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.RequestResponsePact;
-import au.com.dius.pact.model.matchingrules.MatchingRuleGroup;
-import au.com.dius.pact.model.matchingrules.MatchingRules;
+import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.matchingrules.MatchingRuleGroup;
+import au.com.dius.pact.core.model.matchingrules.MatchingRules;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.remondis.cdc.consumer.pactbuilder.ConsumerBuilder;
 import com.remondis.cdc.consumer.pactbuilder.ConsumerBuilderException;
@@ -214,6 +214,7 @@ public class ConsumerBuilderImplTest {
     // Check the resulting matching rules
     MatchingRules responseMatchingRules = Objects.requireNonNull(pact.getInteractions()
         .get(0)
+        .asSynchronousRequestResponse()
         .getResponse()
         .getMatchingRules());
     Map<String, MatchingRuleGroup> bodyMatchingRules = responseMatchingRules.rulesForCategory("body")

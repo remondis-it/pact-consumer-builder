@@ -52,12 +52,14 @@ public class PactFromBeanTest {
     PactDslJsonBody libJsonBody = pactFromLibrary();
 
     StringWriter libOutputWriter = new StringWriter();
-    ((org.json.JSONObject) libJsonBody.getBody()).write(libOutputWriter);
+    libOutputWriter.write(libJsonBody.getBody()
+        .toString());
 
     PactDslJsonBody originJsonBody = pactFromOriginal();
 
     StringWriter originOutputWriter = new StringWriter();
-    ((org.json.JSONObject) originJsonBody.getBody()).write(originOutputWriter);
+    originOutputWriter.write(originJsonBody.getBody()
+        .toString());
 
     String libContent = libOutputWriter.getBuffer()
         .toString();

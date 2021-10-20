@@ -62,7 +62,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.2.0</version>
                     <executions>
                         <execution>
                             <id>attach-javadocs</id>
@@ -258,9 +258,9 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>au.com.dius</groupId>
-                <artifactId>pact-jvm-consumer_2.12</artifactId>
-                <version>3.6.6</version>
+                <groupId>au.com.dius.pact</groupId>
+                <artifactId>consumer</artifactId>
+                <version>4.2.14</version>
                 <scope>provided</scope>
             </dependency>
         </dependencies>
@@ -271,9 +271,15 @@
             <artifactId>cglib</artifactId>
         </dependency>
         <dependency>
-            <groupId>au.com.dius</groupId>
-            <artifactId>pact-jvm-consumer_2.12</artifactId>
+            <groupId>au.com.dius.pact</groupId>
+            <artifactId>consumer</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.13.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
