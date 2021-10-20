@@ -68,7 +68,8 @@ public class TestUtil {
    */
   public static String toJson(PactDslJsonArray array) {
     StringWriter libOutputWriter = new StringWriter();
-    ((org.json.JSONArray) array.getBody()).write(libOutputWriter);
+    libOutputWriter.write(array.getBody()
+        .toString());
 
     String jsonString = libOutputWriter.getBuffer()
         .toString();
@@ -84,7 +85,8 @@ public class TestUtil {
    */
   public static String toJson(PactDslJsonBody body) {
     StringWriter libOutputWriter = new StringWriter();
-    ((org.json.JSONObject) body.getBody()).write(libOutputWriter);
+    libOutputWriter.write(body.getBody()
+        .toString());
 
     String jsonString = libOutputWriter.getBuffer()
         .toString();

@@ -10,6 +10,6 @@ public class BooleanMappingTest {
     BooleanMapping mapping = new BooleanMapping();
     mapping.apply(new PactDslJsonBody(), "fieldName", true);
     mapping.apply(new PactDslJsonBody(), "fieldName", Boolean.TRUE);
-    mapping.apply(new PactDslJsonBody(), "fieldName", null);
+//    mapping.apply(new PactDslJsonBody(), "fieldName", null);
   }
 }
